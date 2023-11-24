@@ -32,7 +32,7 @@ topic = `homeassistant/device_tracker/ab12cd23ab12/config` (unique_id = Address 
 }
 ```
 
-state = `openwrt/ab12cd23ab12/state` (unique_id = Address mac)
+state = `wrtpresence/ab12cd23ab12/state` (unique_id = Address mac)
 
 ```json
 home (or not_home)
@@ -94,6 +94,27 @@ Setting syslog-ng.conf line to etc / syslog-ng.conf (example: view in the direct
 line 68 By default, the line is commented out. You must uncomment it if you have slave access point.
 ```
 
+Setting wrtpresence_main.sh line.
+
+```text
+MQTT_HOST="adresse IP server Mosquitto"
+MQTT_PORT="1883"
+MQTT_USER="login"
+MQTT_PASSWORD="password"
+```
+
+Optionally, you can change the ssid name displayed as an attribute.
+
+```text
+source_ssid=$(awk '{print substr($1,11,8)=="phy0-ap0" ? "IOT":(substr($1,11,8)=="phy2-ap0" ? "2.4ghz":"5ghz")}' <<< ${TMP_PLAC_STATION_NAME})
+```
+
+Optionally, you can change the name and model of the device
+
+```text
+config='{"unique_id":"'${TMP_PLAC_MAC_ADDR//:/}'","name":"'$host_name'","device":{"manufacturer":"Openwrt","model":"Xiaomi Ax3600","name":"WrtPresence","identifiers":["wrtpresence"]},"state_topic":"wrtpresence/'${TMP_PLAC_MAC_ADDR//:/}'/state","payload_home":"home","payload_payload_not_home":"not_home","entity_category":"diagnostic","json_attributes_topic":"wrtpresence/'${TMP_PLAC_MAC_ADDR//:/}'/attributes"}'
+```
+
 Add this command line to LUCI / System / Startup / Local Startup
 
 ```text
@@ -121,7 +142,7 @@ Restart Cron:
 
 ### SLAVE ACCESS POINT
 
-Copy the files in folder ROOT.
+Copy the file in folder ROOT.
 
 ```text
 wrtwifistareport.sh
