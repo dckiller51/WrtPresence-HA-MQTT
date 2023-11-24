@@ -104,12 +104,14 @@ MQTT_PASSWORD="password"
 ```
 
 Optionally, you can change the ssid name displayed as an attribute.
+In this example phy0-ap0 = IOT phy2-ap0 = 2.4ghz and the last is automatically set to 5ghz which corresponds to my phy1-ap0. You must replace only IOT, 2.4ghz and or 5ghz.
 
 ```text
 source_ssid=$(awk '{print substr($1,11,8)=="phy0-ap0" ? "IOT":(substr($1,11,8)=="phy2-ap0" ? "2.4ghz":"5ghz")}' <<< ${TMP_PLAC_STATION_NAME})
 ```
 
-Optionally, you can change the name and model of the device
+Optionally, you can change the name and model of the device.
+In this example, the model is Xiaomi AX3600 and the manufacturer is Openwrt. Replace Xiaomi AX3600 and Openwrt by those of your choice.
 
 ```text
 config='{"unique_id":"'${TMP_PLAC_MAC_ADDR//:/}'","name":"'$host_name'","device":{"manufacturer":"Openwrt","model":"Xiaomi Ax3600","name":"WrtPresence","identifiers":["wrtpresence"]},"state_topic":"wrtpresence/'${TMP_PLAC_MAC_ADDR//:/}'/state","payload_home":"home","payload_payload_not_home":"not_home","entity_category":"diagnostic","json_attributes_topic":"wrtpresence/'${TMP_PLAC_MAC_ADDR//:/}'/attributes"}'
