@@ -8,6 +8,11 @@ To delete a device, I recommend using MQTT Explorer.
 
 OpenWrt -> mqtt -> homeassitant
 
+## Screenshots
+
+![device](https://github.com/dckiller51/WrtPresence-HA-MQTT/tree/main/screeshot/device.png)
+![attributes](https://github.com/dckiller51/WrtPresence-HA-MQTT/tree/main/screeshot/attributes.png)
+
 Exemple : device_tracker discovery:
 
 topic = `homeassistant/device_tracker/ab12cd23ab12/config` (unique_id = Address mac)
