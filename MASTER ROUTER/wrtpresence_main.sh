@@ -105,13 +105,18 @@ trap "trap - SIGTERM && kill -- -$$" SIGINT SIGTERM EXIT
 # ====================
 # Mqtt Configuration
 # ====================
-MQTT_HOST="adresse IP server Mosquitto"
-MQTT_PORT="1883"
-MQTT_USER="login"
-MQTT_PASSWORD="password"
+MQTT_HOST=$(cat /etc/config/wrtpresence.conf | jq -r ".mqtt_host")
+MQTT_PORT=$(cat /etc/config/wrtpresence.conf | jq -r ".mqtt_port")
+MQTT_USER=$(cat /etc/config/wrtpresence.conf | jq -r ".mqtt_user")
+MQTT_PASSWORD=$(cat /etc/config/wrtpresence.conf | jq -r ".mqtt_password")
 MQTT_TOPIC="homeassistant/device_tracker/"
 MOSQUITTO_PUB="/usr/bin/mosquitto_pub"
 DHCP_LEASES="/tmp/dhcp.leases"
+phy0_ap0=$(cat /etc/config/wrtpresence.conf | jq -r ".phy0_ap0_source_ssid")
+phy1_ap0=$(cat /etc/config/wrtpresence.conf | jq -r ".phy1_ap0_source_ssid")
+phy2_ap0=$(cat /etc/config/wrtpresence.conf | jq -r ".phy2_ap0_source_ssid")
+manufacturer=$(cat /etc/config/wrtpresence.conf | jq -r ".manufacturer")
+model=$(cat /etc/config/wrtpresence.conf | jq -r ".model")
 #
 # ====================
 # Script Configuration
@@ -308,10 +313,10 @@ plAddClient() {
 	plCheckDevicesByCounters
     # Publish to MQTT
 	source_type=$(awk '{print substr($1,1,9)}' <<< ${TMP_PLAC_STATION_NAME})
-    source_ssid=$(awk '{print substr($1,11,8)=="phy0-ap0" ? "IOT":(substr($1,11,8)=="phy2-ap0" ? "2.4ghz":"5ghz")}' <<< ${TMP_PLAC_STATION_NAME})
+    source_ssid=$(awk '{print substr($1,11,8)=="phy0-ap0" ? "'$phy0_ap0'":(substr($1,11,8)=="phy2-ap0" ? "'$phy2_ap0'":"'$phy1_ap0'")}' <<< ${TMP_PLAC_STATION_NAME})
 	ip_attribute=$(awk '$2=="'${TMP_PLAC_MAC_ADDR}'" && !found { print ($3); found++ } END { if (!found) print "unknown" }' "${DHCP_LEASES}")
 	host_name=$(awk '$2=="'${TMP_PLAC_MAC_ADDR}'" && !found { print ($4=="*" ? $2:$4); found++ } END { if (!found) print "'${TMP_PLAC_MAC_ADDR}'" }' "${DHCP_LEASES}")
-	config='{"unique_id":"'${TMP_PLAC_MAC_ADDR//:/}'","name":"'$host_name'","device":{"manufacturer":"Openwrt","model":"Xiaomi Ax3600","name":"WrtPresence","identifiers":["wrtpresence"]},"state_topic":"wrtpresence/'${TMP_PLAC_MAC_ADDR//:/}'/state","payload_home":"home","payload_payload_not_home":"not_home","entity_category":"diagnostic","json_attributes_topic":"wrtpresence/'${TMP_PLAC_MAC_ADDR//:/}'/attributes"}'
+	config='{"unique_id":"'${TMP_PLAC_MAC_ADDR//:/}'","name":"'$host_name'","device":{"manufacturer":"'$manufacturer'","model":"'$model'","name":"WrtPresence","identifiers":["wrtpresence"]},"state_topic":"wrtpresence/'${TMP_PLAC_MAC_ADDR//:/}'/state","payload_home":"home","payload_payload_not_home":"not_home","entity_category":"diagnostic","json_attributes_topic":"wrtpresence/'${TMP_PLAC_MAC_ADDR//:/}'/attributes"}'
 	attributes='{"mac":"'${TMP_PLAC_MAC_ADDR}'","source_type":"'$source_type'","source_ssid":"'$source_ssid'","ip":"'$ip_attribute'"}'
     "${MOSQUITTO_PUB}" -r -h "${MQTT_HOST}" -p "${MQTT_PORT}" -t homeassistant/device_tracker/"${TMP_PLAC_MAC_ADDR//:/}"/config -u "${MQTT_USER}" -P "${MQTT_PASSWORD}" -m "$config"
 	sleep 1

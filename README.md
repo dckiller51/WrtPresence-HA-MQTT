@@ -17,8 +17,8 @@ topic = `homeassistant/device_tracker/ab12cd23ab12/config` (unique_id = Address 
   "unique_id": "ab12cd23ab12", (Address mac)
   "name": "Computer HP", (hostname in openwrt if available in dhcp.leases otherwise mac address)
   "device": {
-    "manufacturer": "Openwrt", (Can be modified in the MQTT Config node)
-    "model": "Xiaomi Ax3600", (Can be modified in the MQTT Config node)
+    "manufacturer": "Xiaomi", (Can be modified  in `wrtpresence.conf`)
+    "model": "Ax3600", (Can be modified  in `wrtpresence.conf`)
     "name": "WrtPresence", (Can be modified in the MQTT Config node)
     "identifiers": [
       "WrtPresence" (Can be modified in the MQTT Config node)
@@ -44,7 +44,7 @@ attributes = `wrtpresence/ab12cd23ab12/attributes` (unique_id = Address mac)
 {
   "mac": "ab:12:cd:23:ab:12",
   "source_type": "WifiAP-02", (Device name Openwrt WifiAP-01 or WifiAP-02...)
-  "source_ssid": "2.4ghz", (Names can be changed. Search for `source_ssid` in `wrtpresence_main.sh`.))
+  "source_ssid": "2.4ghz", (Can be modified  in `wrtpresence.conf`)
   "ip": "192.x.x.x" (IP assigned in dhcp.leases)
 }
 ```
@@ -70,6 +70,13 @@ wrtpresence_main.sh
 wrtwifistareport.sh
 ```
 
+Copy the file in folder /etc/config.
+(if you update your router, this avoids reconfiguring everything.)
+
+```text
+wrtpresence.conf
+```
+
 Change file permissions
 
 ```text
@@ -88,34 +95,33 @@ opkg install syslog-ng
 opkg install mosquitto-client-nossl
 ```
 
-Setting syslog-ng.conf line to etc / syslog-ng.conf (example: view in the directory File MASTER ROUTER)
+Setting syslog-ng.conf line to etc/syslog-ng.conf (example: view in the directory File MASTER ROUTER)
 
 ```text
 line 68 By default, the line is commented out. You must uncomment it if you have slave access point.
 ```
 
-Setting wrtpresence_main.sh line.
+Setting wrtpresence.conf. Replace the data on the right.
 
 ```text
-MQTT_HOST="adresse IP server Mosquitto"
-MQTT_PORT="1883"
-MQTT_USER="login"
-MQTT_PASSWORD="password"
+"mqtt_host":"adresse IP server Mosquitto",
+"mqtt_port":"1883",
+"mqtt_user":"login",
+"mqtt_password":"password",
+"phy0_ap0_source_ssid":"IOT",
+"phy1_ap0_source_ssid":"5ghz",
+"phy2_ap0_source_ssid":"2.4ghz"
+"manufacturer":"Xiaomi"
+"model":"Ax3600"
 ```
 
-Optionally, you can change the ssid name displayed as an attribute.
+Optional: 
+
+you can change the ssid name displayed as an attribute.
 In this example phy0-ap0 = IOT phy2-ap0 = 2.4ghz and the last is automatically set to 5ghz which corresponds to my phy1-ap0. You must replace only IOT, 2.4ghz and or 5ghz.
 
-```text
-source_ssid=$(awk '{print substr($1,11,8)=="phy0-ap0" ? "IOT":(substr($1,11,8)=="phy2-ap0" ? "2.4ghz":"5ghz")}' <<< ${TMP_PLAC_STATION_NAME})
-```
-
-Optionally, you can change the name and model of the device.
-In this example, the model is Xiaomi AX3600 and the manufacturer is Openwrt. Replace Xiaomi AX3600 and Openwrt by those of your choice.
-
-```text
-config='{"unique_id":"'${TMP_PLAC_MAC_ADDR//:/}'","name":"'$host_name'","device":{"manufacturer":"Openwrt","model":"Xiaomi Ax3600","name":"WrtPresence","identifiers":["wrtpresence"]},"state_topic":"wrtpresence/'${TMP_PLAC_MAC_ADDR//:/}'/state","payload_home":"home","payload_payload_not_home":"not_home","entity_category":"diagnostic","json_attributes_topic":"wrtpresence/'${TMP_PLAC_MAC_ADDR//:/}'/attributes"}'
-```
+You can change the name and model of the device.
+In this example, the model is AX3600 and the manufacturer is Xiaomi. Replace AX3600 and Xiaomi by those of your choice.
 
 Add this command line to LUCI / System / Startup / Local Startup
 
