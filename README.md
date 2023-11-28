@@ -10,8 +10,8 @@ OpenWrt -> mqtt -> homeassitant
 
 ## Screenshots
 
-![device](https://github.com/dckiller51/WrtPresence-HA-MQTT/tree/main/screeshot/device.png)
-![attributes](https://github.com/dckiller51/WrtPresence-HA-MQTT/tree/main/screeshot/attributes.png)
+![device](https://raw.githubusercontent.com/dckiller51/WrtPresence-HA-MQTT/master/screenshot/device.png)
+![attributes](https://raw.githubusercontent.com/dckiller51/WrtPresence-HA-MQTT/master/screenshot/attributes.png)
 
 Exemple : device_tracker discovery:
 
