@@ -97,6 +97,7 @@ opkg update
 opkg install bash
 opkg remove logd
 opkg install syslog-ng
+opkg install jq
 opkg install mosquitto-client-nossl
 ```
 

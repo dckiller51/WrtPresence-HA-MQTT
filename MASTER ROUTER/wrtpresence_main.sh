@@ -24,6 +24,7 @@ trap "trap - SIGTERM && kill -- -$$" SIGINT SIGTERM EXIT
 # 	opkg install bash
 # 	opkg remove logd
 # 	opkg install syslog-ng
+# 	opkg install jq
 # 	chmod +x "/root/wrtpresence"
 # 	chmod +x "/root/wrtpresence_main.sh"
 # 
@@ -89,6 +90,8 @@ trap "trap - SIGTERM && kill -- -$$" SIGINT SIGTERM EXIT
 # 	Packages
 # 		bash									required for arrays
 # 		syslog-ng								required for log collection from other APs
+# 		jq								        required for json config
+#       mosquitto-client-nossl                  required for mqtt connection
 # 
 #
 # FIFO output line examples:
